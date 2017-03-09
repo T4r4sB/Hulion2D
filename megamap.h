@@ -111,7 +111,9 @@ struct Level
 		int
 			hb=level.BigHoleBegin(x,y),
 			he=level.BigHoleEnd  (x,y);
-		for (int hi=hb; hi<he; ++hi)
+
+		int hi = hb;
+		for (; hi<he; ++hi)
 		{
 			tblib::shrink  (l1,level.t.heights[y  ][hi].lo);
 			tblib::enlarge (l2,level.t.heights[y-1][hi].lo);

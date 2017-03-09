@@ -102,7 +102,8 @@ void FillWaves (tblib::modarray <tblib::modarray<Fixed, N>, N> &texture)
 	for (int j=0; j<N; ++j) for (int i=0; i<N; ++i)
 	{
 		texture[j][i] = fx0;
-		for (int k=0; k<centers.size(); ++k)
+		int k = 0;
+		for (; k<centers.size(); ++k)
 		{
 			Point d = centers[k] - Point(i,j);
 			d.x = d.x.Abs();
