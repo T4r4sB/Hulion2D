@@ -69,7 +69,7 @@ struct Level
 					t(hi,l,line[hi]);
 			++line;
 		}
-	}	
+	}
 
 	template <typename T>
 	class HasSetBounds
@@ -81,18 +81,18 @@ struct Level
 		template <typename C> static Yes& Test(really_has <void (C::*)(int, int), &C::Bounds>*);
 		template <typename> static No& Test(...);
 	public:
-    static bool const value = sizeof(Test<T>(0)) == sizeof(Yes);	
+		static bool const value = sizeof(Test<T>(0)) == sizeof(Yes);
 	};
 
 	template <typename T, bool B = HasSetBounds<T>::value>
 	struct Check;
-	
+
 	template <typename T>
 	struct Check <T, true>
-	{		
+	{
 		static void SetBounds (T& t, int x1, int x2) {t.Bounds(x1,x2);}
 	};
-	
+
 	template <typename T>
 	struct Check <T, false>
 	{
@@ -108,18 +108,20 @@ struct Level
 	void FillHole (T t, Level& level, int x, int y, bool bigHole=false)
 	{
 		int l1=MMY, l2=0;
-		int 
-			hb=level.BigHoleBegin(x,y), 
+		int
+			hb=level.BigHoleBegin(x,y),
 			he=level.BigHoleEnd  (x,y);
-		for (int hi=hb; hi<he; ++hi)
+
+		int hi = hb;
+		for (; hi<he; ++hi)
 		{
 			tblib::shrink  (l1,level.t.heights[y  ][hi].lo);
 			tblib::enlarge (l2,level.t.heights[y-1][hi].lo);
 		}
-		
+
 		Megamap::line ln = map[map.sizeY()-l2];
 		for (int l=l2; l>l1; --l)
-		{			
+		{
 			int bl = bigHole ? level.BigHoleBegin(x,y) : level.HoleBegin(x,y,map.sizeY()-1-l);
 			int br = bigHole ? level.BigHoleEnd  (x,y) : level.HoleEnd  (x,y,map.sizeY()-1-l);
 
@@ -132,7 +134,7 @@ struct Level
 	}
 
 	void InitHoleInfo ()
-	{	
+	{
 		std::vector<int> maxh;
 		maxh.resize(SIZEX*CELL_WIDTH);
 		for (size_t i=0; i<maxh.size(); ++i)
@@ -154,9 +156,9 @@ struct Level
 				HeightInfo h;
 				CreateLine(t.cells[j][i].setting, (ni-i+1)*CELL_WIDTH, h);
 
-				int add = -CELL_HEIGHT; 
+				int add = -CELL_HEIGHT;
 				for (size_t hi=0; hi<h.lo.size(); ++hi)
-					tblib::enlarge(add, maxh[size_t(i)*CELL_WIDTH+hi]-h.lo[hi]); 
+					tblib::enlarge(add, maxh[size_t(i)*CELL_WIDTH+hi]-h.lo[hi]);
 
 				for (size_t hi=0; hi<h.lo.size(); ++hi)
 				{
@@ -164,14 +166,14 @@ struct Level
 					t.heights[j][i*CELL_WIDTH+int(hi)].hi = h.hi[hi]+add;
 					tblib::enlarge(t.maxheight, h.hi[hi]+add);
 				}
-					
-				for (size_t hi=0; hi<h.lo.size(); ++hi)			
+
+				for (size_t hi=0; hi<h.lo.size(); ++hi)
 					tblib::enlarge(maxh[size_t(i)*CELL_WIDTH+hi], add+h.hi[hi]+ROOF_HEIGHT);
 
 				i=ni+1;
 			}
 		}
-		
+
 		std::vector<VertLine> vl;
 		vl.resize(SIZEX);
 		for (size_t i=0; i<vl.size(); ++i)
@@ -186,7 +188,7 @@ struct Level
 	}
 
 	void CreateDoorAt(int x, int y)
-	{	
+	{
 		int sx = x*CELL_WIDTH;
 		int y1 = 0, y1lo=MMY;
 		for (int hi = sx-DOOR_WIDTH/2; hi<sx+DOOR_WIDTH/2; ++hi)
@@ -239,7 +241,7 @@ struct Level
 	{
 		return c == COLOR_EMPTY || c == COLOR_STAIRS_1 || c == COLOR_EMPTY_1;
 	}
-	
+
 	struct HoleByteFill
 	{
 		uint8_t c;
@@ -268,8 +270,8 @@ struct Level
 				dst = COLOR_EMPTY_1;
 		}
 	};
-	
-	struct EmptyToColor 
+
+	struct EmptyToColor
 	{
 		uint8_t color;
 		EmptyToColor (uint8_t color) : color(color) {}
@@ -282,8 +284,8 @@ struct Level
 				pixel = color;
 		}
 	};
-	
-	struct EmptyToBunker 
+
+	struct EmptyToBunker
 	{
 		Level& level;
 		EmptyToBunker(Level& level): level(level) {}
@@ -298,8 +300,8 @@ struct Level
 			}
 		}
 	};
-	
-	struct EmptyToCompcenter 
+
+	struct EmptyToCompcenter
 	{
 		Level& level;
 		EmptyToCompcenter(Level& level): level(level) {}
@@ -321,8 +323,8 @@ struct Level
 			}
 		}
 	};
-	
-	struct EmptyToUnderground 
+
+	struct EmptyToUnderground
 	{
 		Level& level;
 		EmptyToUnderground(Level& level): level(level) {}
@@ -348,8 +350,8 @@ struct Level
 		}
 	};
 
-	
-	struct EmptyToCaves 
+
+	struct EmptyToCaves
 	{
 		Level& level;
 		EmptyToCaves(Level& level): level(level) {}
@@ -370,8 +372,8 @@ struct Level
 			}
 		}
 	};
-	
-	struct EmptyToLair 
+
+	struct EmptyToLair
 	{
 		Level& level;
 		EmptyToLair(Level& level): level(level) {}
@@ -388,7 +390,7 @@ struct Level
 			}
 		}
 	};
-	
+
 	struct Stairs1
 	{
 		int l, r;
@@ -399,20 +401,20 @@ struct Level
 			this->r = r;
 		}
 
-		void operator () (int sx, int sy, uint8_t& pixel) 
+		void operator () (int sx, int sy, uint8_t& pixel)
 		{
 			bool ok=false;
 			switch (sy%8)
 			{
-			case 0 : ok = (sx>=l+2 && sx<l+4 || sx>=r-4 &&  sx<r-2); break;		
-			case 1 : ok = (sx>=l+2 && sx<r-2); break;		
+			case 0 : ok = (sx>=l+2 && sx<l+4 || sx>=r-4 &&  sx<r-2); break;
+			case 1 : ok = (sx>=l+2 && sx<r-2); break;
 			case 2 : ok = (sx>=l+4 && sx<r-4); break;
 			}
 			if (ok && pixel == COLOR_EMPTY)
 				pixel = COLOR_STAIRS;
 		}
 	};
-	
+
 	struct Stairs2
 	{
 		int l, r;
@@ -423,13 +425,13 @@ struct Level
 			this->r = r;
 		}
 
-		void operator () (int sx, int sy, uint8_t& pixel) 
+		void operator () (int sx, int sy, uint8_t& pixel)
 		{
 			bool ok=false;
 			switch (sy%8)
 			{
-			case 0 : ok = (sx>=l+2 && sx<r-2); break;		
-			case 1 : ok = (sx>=l+2 && sx<r-2); break;		
+			case 0 : ok = (sx>=l+2 && sx<r-2); break;
+			case 1 : ok = (sx>=l+2 && sx<r-2); break;
 			default : ok = (sx>=l+4 && sx<l+6 || sx>=r-6 && sx<r-4); break;
 			}
 			if (ok && pixel == COLOR_EMPTY)
@@ -468,7 +470,7 @@ struct Level
 		FillWaves<3>(lair1);
 		FillPerlin(lair2);
 	}
-	
+
 	int RandomNoStairX (int x, int y, bool afrUp, bool afrFromUp, bool afrDown)
 	{
 		tblib::array<int, 4> ranges;
@@ -480,11 +482,11 @@ struct Level
 		}
 
 		if (afrDown && t.cells[y][x].canPass[DIR_DOWN])
-		{			
+		{
 			ranges.push_back(BigHoleBegin(x,y+1));
 			ranges.push_back(BigHoleEnd(x,y+1));
 		}
-		
+
 		if (ranges.size()>2)
 		{
 			if (ranges[2]<ranges[0])
@@ -499,7 +501,7 @@ struct Level
 			range-= (ranges[i+1]-ranges[i]);
 
 		int result = CELL_WIDTH*x + CELL_WIDTH/4 + rnd.random(range);
-		
+
 		for (int i=0; i<ranges.size(); i+=2)
 		{
 			if (result>=ranges[i])
@@ -514,56 +516,56 @@ struct Level
 		for (int tr=0; tr<30; ++tr)
 		{
 			int tx = x*CELL_WIDTH + rnd.random(CELL_WIDTH);
-			DrawTree(map, tx, map.sizeY()-1-t.heights[y][tx].lo, tr/29*60+4+rnd.random(7)*rnd.random(7), 
+			DrawTree(map, tx, map.sizeY()-1-t.heights[y][tx].lo, tr/29*60+4+rnd.random(7)*rnd.random(7),
 				ColorToByte(tbal::Color(192, rnd.random(64), 0)),
 				ColorToByte(tbal::Color(rnd.random(128), 192+rnd.random(64), 0)));
-		}		
+		}
 
 		FillCave(EmptyToColor(COLOR_FOREST), *this, x, y);
 	}
-	
+
 	void MakeForest2 (int x, int y)
 	{
 		for (int tr=0; tr<2; ++tr)
 		{
-			int tx = RandomNoStairX(x,y, true, true, true); 
+			int tx = RandomNoStairX(x,y, true, true, true);
 			int r = (rnd.random(5)+5)*(rnd.random(2)*2-1);
 			int h = rnd.random(30)+30;
 			int ty = map.sizeY()-1-t.heights[y][tx].lo-h;
 			DrawStreetLight(map, tx, ty, r, h);
 			t.AddLight(tx-2*r, ty, 255, 255, 128, 100+rnd.random(100));
-		}		
+		}
 
 		FillCave(EmptyToColor(COLOR_FOREST), *this, x, y);
 	}
-	
+
 	void MakeHell (int x, int y)
 	{
 		for (int tr=0; tr<5; ++tr)
 		{
 			int tx = x*CELL_WIDTH + rnd.random(CELL_WIDTH);
-			DrawTree(map, tx, map.sizeY()-1-t.heights[y][tx].lo, 6+rnd.random(6)*rnd.random(6), 
+			DrawTree(map, tx, map.sizeY()-1-t.heights[y][tx].lo, 6+rnd.random(6)*rnd.random(6),
 				ColorToByte(tbal::Color(255, 255, 255)),
 				ColorToByte(tbal::Color(255, 255, 255)));
-		}		
+		}
 		FillCave(EmptyToColor(COLOR_HELL), *this, x, y);
 	}
-	
+
 	void MakeBunker (int x, int y)
-	{	
+	{
 		for (int tr=0; tr<10; ++tr)
 		{
 			int tx = x*CELL_WIDTH + rnd.random(CELL_WIDTH);
 
 			int r = rnd.random(3);
-			uint8_t endColor = 
+			uint8_t endColor =
 				r==0 ? ColorToByte(tbal::Color(255, 0, 0)) :
 				r==1 ? ColorToByte(tbal::Color(0, 255, 0)) :
-				       ColorToByte(tbal::Color(0, 0, 255));
+							 ColorToByte(tbal::Color(0, 0, 255));
 
 			bool up = rnd.random(2)==0;
 
-			DrawMech(map, tx, map.sizeY()-1-(up?t.heights[y][tx].lo:t.heights[y][tx].hi), 10+rnd.random(20)+rnd.random(5)/4*20, 
+			DrawMech(map, tx, map.sizeY()-1-(up?t.heights[y][tx].lo:t.heights[y][tx].hi), 10+rnd.random(20)+rnd.random(5)/4*20,
 				ColorToByte(tbal::Color(64, 64, 64)),
 				endColor, up);
 		}
@@ -579,29 +581,29 @@ struct Level
 	{
 		for (int tr=0; tr<1; ++tr)
 		{
-			int tx = RandomNoStairX(x,y, true, true, false); 
+			int tx = RandomNoStairX(x,y, true, true, false);
 			int ty = map.sizeY()-1-t.heights[y][tx].hi+10;
-			DrawFluor(map, tx, ty, 35+rnd.random(5), rnd.random(11)-5);			
+			DrawFluor(map, tx, ty, 35+rnd.random(5), rnd.random(11)-5);
 			t.AddLight(tx, ty, 128, 255, 255, 300+rnd.random(100));
 		}
 	}
-	
+
 	void MakeUnderground (int x, int y)
 	{
 		for (int tr=0; tr<3; ++tr)
 		{
-			int tx = RandomNoStairX(x,y, true, false, true); 
+			int tx = RandomNoStairX(x,y, true, false, true);
 			DrawBox(map, tx, map.sizeY()-1-t.heights[y][tx].lo, 8+rnd.random(16));
 		}
 
 		for (int tr=0; tr<3; ++tr)
 		{
-			int tx = RandomNoStairX(x,y, true, false, true); 
-			DrawTree(map, tx, map.sizeY()-1-t.heights[y][tx].lo, 7+rnd.random(20), 
+			int tx = RandomNoStairX(x,y, true, false, true);
+			DrawTree(map, tx, map.sizeY()-1-t.heights[y][tx].lo, 7+rnd.random(20),
 				ColorToByte(tbal::Color(255, 192+rnd.random(64), 64)),
 				ColorToByte(tbal::Color(192+rnd.random(64), 192+rnd.random(64), 0)));
 			DrawBox(map, tx, map.sizeY()-1-t.heights[y][tx].lo, 8+rnd.random(8));
-		}		
+		}
 
 		FillCave(EmptyToUnderground(*this), *this, x, y);
 		if (y>0 && t.cells[y-1][x].canPass[DIR_DOWN])
@@ -609,33 +611,33 @@ struct Level
 		if (t.cells[y][x].canPass[DIR_DOWN] && t.cells[y+1][x].setting==SG_HELL)
 			FillHole(EmptyToUnderground(*this), *this, x, y+1);
 	}
-	
+
 	void MakeUnderground2 (int x, int y)
 	{
 		for (int tr=0; tr<4; ++tr)
 		{
-			int tx = RandomNoStairX(x,y, true, true, false); 
+			int tx = RandomNoStairX(x,y, true, true, false);
 			int h = 5+rnd.random(10);
 			int ty = map.sizeY()-1-t.heights[y][tx].hi+h;
-			DrawGlowLamp(map, tx, ty, h);			
+			DrawGlowLamp(map, tx, ty, h);
 			t.AddLight(tx, ty, 255, 255, 128, 50+rnd.random(200));
 		}
 	}
-	
+
 	void MakeCaves (int x, int y)
-	{		
+	{
 		bool blue = rnd.random(3)==0;
 		for (int tr=0; tr<5; ++tr)
 		{
-			int tx = RandomNoStairX(x,y, true, false, true); 
-			uint8_t color = blue ? 
+			int tx = RandomNoStairX(x,y, true, false, true);
+			uint8_t color = blue ?
 				ColorToByte(tbal::Color(0, 255, 255)) :
 				ColorToByte(tbal::Color(255, 255, 0));
 			int y1 = map.sizeY()-1-t.heights[y][tx].lo;
 			int diff =t.heights[y][tx].hi-t.heights[y][tx].lo;
 			DrawTree(map, tx, y1, 3+rnd.random(4)*rnd.random(4)*(1+diff/90), color, color);
 			t.AddLight(tx, y1, blue?0:255, blue?0:128, blue?255:0,	diff+rnd.random(100));
-		}		
+		}
 		FillCave(EmptyToCaves(*this), *this, x, y);
 		if (y>0 && t.cells[y-1][x].canPass[DIR_DOWN])
 			FillHole(EmptyToCaves(*this), *this, x, y);
@@ -643,15 +645,15 @@ struct Level
 			FillHole(EmptyToCaves(*this), *this, x, y+1);
 	}
 
-	
+
 	void MakeLair (int x, int y)
-	{		
-		
+	{
+
 		for (int tr=0; tr<5; ++tr)
 		{
-			int tx = RandomNoStairX(x,y, true, false, true); 
+			int tx = RandomNoStairX(x,y, true, false, true);
 
-			tbal::Color color; 
+			tbal::Color color;
 			switch (rnd.random(6))
 			{
 			case 0 : color = tbal::COLOR_RED; break;
@@ -661,7 +663,7 @@ struct Level
 			case 4 : color = tbal::COLOR_BLUE; break;
 			case 5 : color = tbal::COLOR_PURPLE; break;
 			}
-			
+
 			int y1 = map.sizeY()-1-t.heights[y][tx].lo;
 			int diff = t.heights[y][tx].hi-t.heights[y][tx].lo;
 
@@ -669,37 +671,37 @@ struct Level
 
 			ByteCircle(map, tx, ty, 3, ColorToByte(color));
 			t.AddLight(tx, ty, color.R(), color.G(), color.B(),	100+rnd.random(100));
-		}		
+		}
 		FillCave(EmptyToLair(*this), *this, x, y);
 		if (y>0 && t.cells[y-1][x].canPass[DIR_DOWN])
 			FillHole(EmptyToLair(*this), *this, x, y);
 		if (t.cells[y][x].canPass[DIR_DOWN] && t.cells[y+1][x].setting==SG_HELL)
 			FillHole(EmptyToLair(*this), *this, x, y+1);
 	}
-	
+
 	void MakeCompcenter (int x, int y)
-	{	
+	{
 		for (int tr=0; tr<10; ++tr)
 		{
 			int tx = x*CELL_WIDTH + rnd.random(CELL_WIDTH);
 
 			int r = rnd.random(3);
-			uint8_t endColor = 
+			uint8_t endColor =
 				r==0 ? ColorToByte(tbal::Color(255, 0, 0)) :
 				r==1 ? ColorToByte(tbal::Color(0, 255, 0)) :
-				       ColorToByte(tbal::Color(0, 0, 255));
+							 ColorToByte(tbal::Color(0, 0, 255));
 
 			bool up = false;
 
-			DrawMech(map, tx, map.sizeY()-1-(up?t.heights[y][tx].lo:t.heights[y][tx].hi), 10+rnd.random(20)+rnd.random(5)/4*20, 
+			DrawMech(map, tx, map.sizeY()-1-(up?t.heights[y][tx].lo:t.heights[y][tx].hi), 10+rnd.random(20)+rnd.random(5)/4*20,
 				ColorToByte(tbal::Color(64, 64, 64)),
 				endColor, up);
 		}
-		
+
 		int cnt = 1;
 		for (int tr=0; tr<cnt; ++tr)
 		{
-			int tx = RandomNoStairX(x,y, true, false, true); 
+			int tx = RandomNoStairX(x,y, true, false, true);
 			int ty = map.sizeY()-1-t.heights[y][tx].lo-24-rnd.random(16);
 			DrawScreen(map, tx, ty, 24+rnd.random(16));
 			//t.AddLight(tx, ty, 0, 255, 0, 100);
@@ -711,21 +713,21 @@ struct Level
 		if (t.cells[y][x].canPass[DIR_DOWN] && t.cells[y+1][x].setting==SG_HELL)
 			FillHole(EmptyToCompcenter(*this), *this, x, y+1);
 	}
-	
+
 	void MakeCompcenter2 (int x, int y)
 	{
 
 		for (int tr=0; tr<3; ++tr)
 		{
-			int tx = RandomNoStairX(x,y, true, false, true); 
+			int tx = RandomNoStairX(x,y, true, false, true);
 			DrawBox(map, tx, map.sizeY()-1-t.heights[y][tx].lo, 8+rnd.random(16));
 		}
 
 		for (int tr=0; tr<1; ++tr)
 		{
-			int tx = RandomNoStairX(x,y, true, true, false); 
+			int tx = RandomNoStairX(x,y, true, true, false);
 			int ty = map.sizeY()-1-t.heights[y][tx].hi+10;
-			DrawFluor(map, tx, ty, 35+rnd.random(5), rnd.random(11)-5);			
+			DrawFluor(map, tx, ty, 35+rnd.random(5), rnd.random(11)-5);
 			t.AddLight(tx, ty, 128, 255, 255, 300+rnd.random(100));
 		}
 	}
@@ -734,19 +736,19 @@ struct Level
 	{
 		tblib::recreate(map, MMX, MMY);
 		map.Fill(ByteFill(COLOR_WALL));
-		
+
 		// блядское хитрожопое заполнение дыр, чтобы гг не проваливался
 		for (int j=t.cells.size()-1; j>=1; --j) for (int i=0; i<t.cells[j].size(); ++i) if (t.cells[j][i].was)
 			if (t.cells[j-1][i].canPass[DIR_DOWN])
-				FillHole(UnregularHoleFill(*this, i, j-1, t.cells[j][i].canPass[DIR_UP]>0), *this, i, j, true);		
+				FillHole(UnregularHoleFill(*this, i, j-1, t.cells[j][i].canPass[DIR_UP]>0), *this, i, j, true);
 
 		for (int j=t.cells.size()-1; j>=1; --j) for (int i=0; i<t.cells[j].size(); ++i) if (t.cells[j][i].was)
 			if (t.cells[j-1][i].canPass[DIR_DOWN])
 				FillHole(HoleByteFill(COLOR_EMPTY), *this, i, j);
-		
+
 		for (int j=t.cells.size()-1; j>=0; --j) for (int i=0; i<t.cells[j].size(); ++i) if (t.cells[j][i].was)
 			FillCave(HoleByteFill(COLOR_EMPTY), *this, i, j);
-		
+
 		for (int j=t.cells.size()-1; j>=0; --j) for (int i=0; i<t.cells[j].size(); ++i) if (t.cells[j][i].was)
 			if (t.cells[j][i].canPass[DIR_UP])
 			{
@@ -782,9 +784,9 @@ struct Level
 			case SG_COMPCENTER : MakeCompcenter(i,j); break;
 			case SG_CAVES : MakeCaves(i,j); break;
 			case SG_LAIR : MakeLair(i,j); break;
-			}			
+			}
 		}
-		
+
 		for (int j=t.cells.size()-1; j>=0; --j) for (int i=0; i<t.cells[j].size(); ++i) if (t.cells[j][i].was)
 		{
 			switch (t.cells[j][i].setting)
@@ -793,7 +795,7 @@ struct Level
 			case SG_UNDERGROUND : MakeUnderground2(i,j); break;
 			case SG_BUNKER : MakeBunker2(i,j); break;
 			case SG_COMPCENTER : MakeCompcenter2(i,j); break;
-			}			
+			}
 		}
 	}
 
@@ -805,7 +807,7 @@ struct Level
 		int hy = y/HCSIZE;
 
 		int r,g,b;
-				
+
 		if (x<MMX && MMY-1-y>t.heights[0][x].lo && t.cells[0][x/CELL_WIDTH].was)
 		{
 			// лес
@@ -832,9 +834,9 @@ struct Level
 			b = 10;
 		}
 
-		
+
 		if (hx<HMMX && hy<HMMY)
-		{			
+		{
 			LL::yclass& cell = t.lightcells[hy][hx];
 
 			for (LL::xynode *node = cell.firstx; node; node=node->nextx)
@@ -855,14 +857,14 @@ struct Level
 	}
 
 	static const int LG=8;
-  typedef tblib::carray<bool, (MMX+LG)/LG> HRLine;
+	typedef tblib::carray<bool, (MMX+LG)/LG> HRLine;
 	tblib::carray<HRLine, (MMY+LG)/LG> hasRoom;
 
-	//typedef tblib::carray<IntRGB, LG+1> KL;	
+	//typedef tblib::carray<IntRGB, LG+1> KL;
 	//typedef tblib::carray<KL, LG+1> KLCell;
 
-	typedef tblib::carray<IntRGB, MMX+LG> KL;	
-		
+	typedef tblib::carray<IntRGB, MMX+LG> KL;
+
 	static void Mid (const IntRGB& l, const IntRGB& r, IntRGB& res)
 	{
 		res = (l&r) + (((l^r) & halfmask)>>1);
@@ -872,11 +874,11 @@ struct Level
 	struct MidColor
 	{
 		void operator () (const IntRGB& l, const IntRGB& r, IntRGB& res)
-		{		
+		{
 			Mid (l,r,res);
 		}
 	};
-	
+
 	class MidLine
 	{
 		// понос чтоб компилятор мозг не ебал
@@ -887,7 +889,7 @@ struct Level
 
 		void operator () (const KL& l, const KL& r, KL& res)
 		{
-			for (int i=0; i<res.size()/LG; ++i) 
+			for (int i=0; i<res.size()/LG; ++i)
 				if (line[i])
 					for (int j=i*LG; j<i*LG+LG; ++j)
 						Mid(l[j], r[j], res[j]);
@@ -904,8 +906,8 @@ struct Level
 			UselessWrapperFillMid<T,Mid,N/2>::FillMid (&t[N/2], mid);
 		}
 	};
-	
-	template <typename T, typename Mid> 
+
+	template <typename T, typename Mid>
 	struct UselessWrapperFillMid <T, Mid, 1>
 	{
 		inline static void FillMid (T* t, Mid mid)
@@ -914,43 +916,43 @@ struct Level
 			(void)mid;
 		}
 	};
-	
+
 	void FillLightLine (int j, KL& line)
-	{		
+	{
 		for (int k=0; k<line.size()/LG; ++k)
 		{
-			if (hasRoom[j/LG][k] || (k>0 && hasRoom[j/LG][k-1]) 
+			if (hasRoom[j/LG][k] || (k>0 && hasRoom[j/LG][k-1])
 				|| (j>=LG && (hasRoom[j/LG-1][k]) || (k>0 && hasRoom[j/LG-1][k-1])))
 				line[k*LG] = GetLightInPoint(k*LG, j);
 		}
 
-		for (int k=0; k<line.size()/LG-1; ++k) if (hasRoom[j/LG][k] || (j>=LG && hasRoom[j/LG-1][k])) 
+		for (int k=0; k<line.size()/LG-1; ++k) if (hasRoom[j/LG][k] || (j>=LG && hasRoom[j/LG-1][k]))
 			UselessWrapperFillMid<IntRGB, MidColor, LG>::FillMid(&line[k*LG], MidColor());
-	}	
+	}
 
 	/*
 	void FillLightLine (int j, tblib::carray<KLCell, MMX/LG+1> &cells)
-	{		
+	{
 		for (int k=0; k<cells.size(); ++k)
 		{
 			cells[k][0] = cells[k][LG];
 			GetLightInPoint(k*LG, j, cells[k][LG][0]);
 		}
-		
+
 		for (int k=0; k<cells.size()-1; ++k)
 		{
 			cells[k][LG][LG] = cells[k+1][LG][0];
 			MidStep<IntRGB, LG>::Fill (&cells[k][LG][0]);
 		}
 	}*/
-	
+
 	// два разных способа размещения ячеек в памяти
 	tblib::carray<KL, LG+1> kl;
 	//tblib::carray<KLCell, MMX/LG+1> cells;
 
 	void MulLights ()
-	{		
-		for (int j=0; j<hasRoom.size(); ++j) for (int i=0; i<hasRoom.size(); ++i) 
+	{
+		for (int j=0; j<hasRoom.size(); ++j) for (int i=0; i<hasRoom.size(); ++i)
 			hasRoom[j][i]=false;
 		for (int j=MMY-t.maxheight; j<MMY; ++j) for (int i=0; i<MMX; ++i)
 			if (map[j][i]>=COLOR_FIRST)
@@ -960,11 +962,11 @@ struct Level
 
 		//FillLightLine ((MMY-t.maxheight)&(~LG), cells);
 
-		for (int j=(MMY-t.maxheight)&(~LG); j<MMY; ++j) 
-		{				
-			
+		for (int j=(MMY-t.maxheight)&(~LG); j<MMY; ++j)
+		{
+
 			if (j%LG==0)
-			{    		
+			{
 				kl[0]=kl[LG];
 				FillLightLine(j+LG, kl[LG]);
 				UselessWrapperFillMid<KL, MidLine, LG>::FillMid(&kl[0], MidLine(hasRoom[j/LG]));
@@ -977,27 +979,27 @@ struct Level
 
 			for (int i=0; i<MMX; ++i) if (hasRoom[j/LG][i/LG]) // иначе все эти усреднения не пригодятся
 			{
-				
+
 				if (map[j][i]>=COLOR_FIRST)
 				{
 					IntRGB& cur = kl[j%LG][i];
-					
+
 					//IntRGB& cur = cells[i/LG][j%LG][i%LG];
 					int r = cur.R(), g=cur.G(), b=cur.B();
-					
+
 					r += rnd.random((r-20)/8);
 					g += rnd.random((g-20)/8);
 					b += rnd.random((b-20)/8);
-					
+
 					if (r>0 && g>0 && b>0)
 						map[j][i] = MulLight(map[j][i], r,g,b);
 					else
 						map[j][i] = COLOR_FIRST;
 				}
 			}
-			
+
 		}
-	}	
+	}
 
 	void Init(int seed)
 	{
@@ -1005,7 +1007,7 @@ struct Level
 		rnd.randseed = seed;
 		t.Generate();
 		InitHoleInfo();
-		
+
 		InitColorTable ();
 		tblib::recreate(bkForest,320,200);
 		CreateForestBk (bkForest);
@@ -1015,7 +1017,7 @@ struct Level
 		FillHoles();
 		MulLights();
 	}
-	
+
 	void DrawToBuf (const tbal::Bitmap& buf, int x, int y)
 	{
 		assert(buf.sizeX()==bkForest.sizeX());
